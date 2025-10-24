@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { createClient } from '@vercel/postgres';
+import { sql } from '@vercel/postgres';
 import { put } from '@vercel/blob';
 import { GoogleGenAI } from '@google/genai';
 import type { AspectRatio } from '../types';
@@ -109,40 +109,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     console.log('Video uploaded to Blob:', blob.url);
 
     // Save metadata to Postgres
-    const client = createClient();
-    await client.connect();
+    const result = await sql`
+      INSERT INTO videos (user_id, title, year, motion_style, aspect_ratio, video_url)
+      VALUES (${userId}, ${title}, ${year || null}, ${motionStyle}, ${aspectRatio}, ${blob.url})
+      RETURNING id, user_id, title, year, motion_style, aspect_ratio, video_url, created_at
+    `;
 
-    try {
-      await client.query(`
-        CREATE TABLE IF NOT EXISTS videos (
-          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-          user_id TEXT NOT NULL,
-          title TEXT NOT NULL,
-          year INTEGER,
-          motion_style TEXT NOT NULL,
-          aspect_ratio TEXT NOT NULL,
-          video_url TEXT NOT NULL,
-          created_at TIMESTAMP DEFAULT NOW()
-        )
-      `);
+    console.log('Video metadata saved to Postgres:', result.rows[0]);
 
-      const result = await client.query(
-        `INSERT INTO videos (user_id, title, year, motion_style, aspect_ratio, video_url)
-         VALUES ($1, $2, $3, $4, $5, $6)
-         RETURNING id, user_id, title, year, motion_style, aspect_ratio, video_url, created_at`,
-        [userId, title, year || null, motionStyle, aspectRatio, blob.url]
-      );
-
-      console.log('Video metadata saved to Postgres:', result.rows[0]);
-
-      return res.status(200).json({
-        success: true,
-        video: result.rows[0],
-        videoUrl: blob.url,
-      });
-    } finally {
-      await client.end();
-    }
+    return res.status(200).json({
+      success: true,
+      video: result.rows[0],
+      videoUrl: blob.url,
+    });
   } catch (error: any) {
     console.error('Error in generate-video handler:', error);
     return res.status(500).json({

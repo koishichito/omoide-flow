@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { createClient } from '@vercel/postgres';
+import { sql } from '@vercel/postgres';
 import { del } from '@vercel/blob';
 
 /**
@@ -10,9 +10,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const client = createClient();
-  await client.connect();
-
   try {
     const { videoId, userId } = req.body;
 
@@ -21,12 +18,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     // First, verify ownership and get video URL
-    const videoResult = await client.query(
-      `SELECT id, user_id, video_url
-       FROM videos
-       WHERE id = $1`,
-      [videoId]
-    );
+    const videoResult = await sql`
+      SELECT id, user_id, video_url
+      FROM videos
+      WHERE id = ${videoId}
+    `;
 
     if (videoResult.rows.length === 0) {
       return res.status(404).json({ error: 'Video not found' });
@@ -49,10 +45,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     // Delete from Postgres
-    await client.query(
-      `DELETE FROM videos WHERE id = $1`,
-      [videoId]
-    );
+    await sql`DELETE FROM videos WHERE id = ${videoId}`;
 
     console.log('Deleted video from Postgres:', videoId);
 
@@ -65,7 +58,5 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(500).json({
       error: error.message || 'Internal server error',
     });
-  } finally {
-    await client.end();
   }
 }
