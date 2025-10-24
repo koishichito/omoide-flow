@@ -45,6 +45,18 @@ export const generateVideoFromImage = async (
   console.log("Starting video generation with prompt:", prompt);
   console.log("Using model:", videoModel);
 
+  // Preview models support resolution parameter, stable models don't
+  const supportsResolution = videoModel.includes('-preview');
+
+  const config: any = {
+    numberOfVideos: 1,
+    aspectRatio,
+  };
+
+  if (supportsResolution) {
+    config.resolution = '720p';
+  }
+
   let operation = await ai.models.generateVideos({
     model: videoModel,
     prompt,
@@ -52,11 +64,7 @@ export const generateVideoFromImage = async (
       imageBytes: imageBase64,
       mimeType: imageFile.type,
     },
-    config: {
-      numberOfVideos: 1,
-      resolution: '720p',
-      aspectRatio,
-    },
+    config,
   });
 
   console.log("Video generation initiated. Operation:", operation);
