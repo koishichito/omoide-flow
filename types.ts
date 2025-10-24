@@ -1,5 +1,5 @@
 export type MotionStyle = 'zoom' | 'pan' | 'depth' | 'ambient' | 'portrait';
-export type AppState = 'API_KEY_CHECK' | 'API_KEY_SELECTION' | 'FORM' | 'GENERATING' | 'RESULT';
+export type AppState = 'API_KEY_CHECK' | 'API_KEY_SELECTION' | 'FORM' | 'GENERATING' | 'RESULT' | 'GALLERY';
 export type AspectRatio = '16:9' | '9:16';
 
 export interface Memory {
@@ -8,6 +8,17 @@ export interface Memory {
   motionStyle: string;
   originalPhoto: File;
   aspectRatio: AspectRatio;
+}
+
+export interface SavedVideo {
+  id: string;
+  user_id: string;
+  title: string;
+  year?: number;
+  motion_style: string;
+  aspect_ratio: AspectRatio;
+  video_url: string;
+  created_at: string;
 }
 
 /**
