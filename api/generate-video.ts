@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { sql } from './db';
+import { sql } from './db.js';
 import { put } from '@vercel/blob';
 import { GoogleGenAI } from '@google/genai';
 import type { AspectRatio } from '../types';

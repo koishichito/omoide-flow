@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { sql } from './db';
+import { sql } from './db.js';
 
 /**
  * Vercel Serverless Function to get user's videos
