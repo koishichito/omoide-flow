@@ -32,18 +32,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     console.log('Starting video generation with prompt:', prompt);
     console.log('Using model:', videoModel);
 
-    // Preview models support resolution parameter, stable models don't
-    const supportsResolution = videoModel.includes('-preview');
-
-    const config: any = {
-      numberOfVideos: 1,
-      aspectRatio: aspectRatio as AspectRatio,
-    };
-
-    if (supportsResolution) {
-      config.resolution = '720p';
-    }
-
     let operation = await ai.models.generateVideos({
       model: videoModel,
       prompt,
@@ -51,7 +39,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         imageBytes: imageBase64,
         mimeType,
       },
-      config,
+      config: {
+        numberOfVideos: 1,
+        aspectRatio: aspectRatio as AspectRatio,
+      },
     });
 
     console.log('Video generation initiated. Operation:', operation);
