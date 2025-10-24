@@ -27,6 +27,13 @@ const AppContent: React.FC = () => {
   const { user, isLoaded } = useUser();
 
   const checkApiKey = useCallback(async () => {
+    // In production (Vercel), use API backend, skip API key selection
+    if (USE_API_BACKEND) {
+      setAppState('FORM');
+      return;
+    }
+
+    // In AI Studio environment, check for selected API key
     if (window.aistudio && await window.aistudio.hasSelectedApiKey()) {
       setAppState('FORM');
     } else {
