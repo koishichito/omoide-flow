@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import type { MotionStyle, AspectRatio } from '../types';
+import type { MotionStyle, AspectRatio, VideoModel } from '../types';
 
 interface CreateMemoryFormProps {
   onSubmit: (
@@ -7,7 +7,8 @@ interface CreateMemoryFormProps {
     year: number | undefined,
     motionStyle: MotionStyle,
     imageFile: File,
-    aspectRatio: AspectRatio
+    aspectRatio: AspectRatio,
+    videoModel: VideoModel
   ) => void;
   error: string | null;
 }
@@ -25,6 +26,12 @@ const ASPECT_RATIOS: { id: AspectRatio; label: string; icon: React.ReactNode }[]
     {id: '9:16', label: '縦長', icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"></path></svg> }
 ];
 
+const MODELS: { id: VideoModel; label: string; description: string }[] = [
+  { id: 'veo-3.1-fast-generate-preview', label: 'Veo 3.1 Fast', description: '高速・高品質（推奨）' },
+  { id: 'veo-2.0-generate-preview', label: 'Veo 2.0', description: '安定版' },
+  { id: 'imagen-3-generate-video-preview', label: 'Imagen Video', description: 'シンプル動画' }
+];
+
 const CreateMemoryForm: React.FC<CreateMemoryFormProps> = ({ onSubmit, error }) => {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -32,6 +39,7 @@ const CreateMemoryForm: React.FC<CreateMemoryFormProps> = ({ onSubmit, error }) 
   const [year, setYear] = useState('');
   const [motionStyle, setMotionStyle] = useState<MotionStyle>('zoom');
   const [aspectRatio, setAspectRatio] = useState<AspectRatio>('16:9');
+  const [videoModel, setVideoModel] = useState<VideoModel>('veo-3.1-fast-generate-preview');
   const [isLoading, setIsLoading] = useState(false);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -54,7 +62,7 @@ const CreateMemoryForm: React.FC<CreateMemoryFormProps> = ({ onSubmit, error }) 
     }
     setIsLoading(true);
     const yearNum = year ? parseInt(year, 10) : undefined;
-    onSubmit(title, yearNum, motionStyle, imageFile, aspectRatio);
+    onSubmit(title, yearNum, motionStyle, imageFile, aspectRatio, videoModel);
   };
 
   return (
@@ -119,7 +127,24 @@ const CreateMemoryForm: React.FC<CreateMemoryFormProps> = ({ onSubmit, error }) 
         </div>
 
         <div>
-          <h3 className="text-sm font-medium text-gray-300">5. 動きのスタイルを選ぶ</h3>
+          <h3 className="text-sm font-medium text-gray-300">5. AIモデルを選ぶ</h3>
+          <div className="grid grid-cols-1 gap-3 mt-2">
+            {MODELS.map((model) => (
+              <button
+                type="button"
+                key={model.id}
+                onClick={() => setVideoModel(model.id)}
+                className={`text-left p-4 rounded-lg transition-all ${videoModel === model.id ? 'bg-blue-600 text-white ring-2 ring-white' : 'bg-gray-700 hover:bg-gray-600'}`}
+              >
+                <div className="font-semibold">{model.label}</div>
+                <div className="text-xs opacity-80 mt-1">{model.description}</div>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <h3 className="text-sm font-medium text-gray-300">6. 動きのスタイルを選ぶ</h3>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 mt-2">
             {STYLES.map((style) => (
               <button

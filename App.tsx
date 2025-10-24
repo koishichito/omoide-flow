@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { ClerkProvider, SignedIn, SignedOut, SignInButton, UserButton, useUser } from '@clerk/clerk-react';
-import type { Memory, AppState, AspectRatio } from './types';
+import type { Memory, AppState, AspectRatio, VideoModel } from './types';
 import { generateVideoFromImage } from './services/geminiService';
 import { generateAndSaveVideo } from './services/videoApiService';
 import { generatePrompt } from './utils/promptGenerator';
@@ -56,7 +56,8 @@ const AppContent: React.FC = () => {
     year: number | undefined,
     motionStyle: string,
     imageFile: File,
-    aspectRatio: AspectRatio
+    aspectRatio: AspectRatio,
+    videoModel: VideoModel
   ) => {
     setAppState('GENERATING');
     setError(null);
@@ -76,11 +77,12 @@ const AppContent: React.FC = () => {
           motionStyle,
           imageFile,
           aspectRatio,
-          prompt
+          prompt,
+          videoModel
         );
       } else {
         // Use client-side generation (AI Studio environment)
-        generatedVideoUrl = await generateVideoFromImage(imageFile, prompt, aspectRatio);
+        generatedVideoUrl = await generateVideoFromImage(imageFile, prompt, aspectRatio, videoModel);
       }
 
       setVideoUrl(generatedVideoUrl);

@@ -1,4 +1,4 @@
-import type { AspectRatio } from '../types';
+import type { AspectRatio, VideoModel } from '../types';
 
 /**
  * Converts a File object to a base64 encoded string, without the data URI prefix.
@@ -27,7 +27,8 @@ export const generateAndSaveVideo = async (
   motionStyle: string,
   imageFile: File,
   aspectRatio: AspectRatio,
-  prompt: string
+  prompt: string,
+  videoModel: VideoModel
 ): Promise<string> => {
   const imageBase64 = await fileToBase64(imageFile);
   const mimeType = imageFile.type;
@@ -46,6 +47,7 @@ export const generateAndSaveVideo = async (
       mimeType,
       aspectRatio,
       prompt,
+      videoModel,
     }),
   });
 

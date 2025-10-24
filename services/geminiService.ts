@@ -1,5 +1,5 @@
 import { GoogleGenAI } from "@google/genai";
-import type { AspectRatio } from "../types";
+import type { AspectRatio, VideoModel } from "../types";
 
 const POLLING_INTERVAL_MS = 10000; // 10 seconds
 
@@ -25,12 +25,14 @@ const fileToBase64 = (file: File): Promise<string> => {
  * @param imageFile The image file to animate.
  * @param prompt The prompt describing the animation.
  * @param aspectRatio The desired aspect ratio of the video.
+ * @param videoModel The video generation model to use.
  * @returns A promise that resolves to an object URL for the generated video.
  */
 export const generateVideoFromImage = async (
   imageFile: File,
   prompt: string,
-  aspectRatio: AspectRatio
+  aspectRatio: AspectRatio,
+  videoModel: VideoModel
 ): Promise<string> => {
   if (!process.env.API_KEY) {
     throw new Error("API key is not configured. Please select one.");
@@ -41,9 +43,10 @@ export const generateVideoFromImage = async (
   const imageBase64 = await fileToBase64(imageFile);
 
   console.log("Starting video generation with prompt:", prompt);
-  
+  console.log("Using model:", videoModel);
+
   let operation = await ai.models.generateVideos({
-    model: 'veo-3.1-fast-generate-preview',
+    model: videoModel,
     prompt,
     image: {
       imageBytes: imageBase64,

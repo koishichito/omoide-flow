@@ -15,9 +15,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const { userId, title, year, motionStyle, imageBase64, mimeType, aspectRatio, prompt } = req.body;
+    const { userId, title, year, motionStyle, imageBase64, mimeType, aspectRatio, prompt, videoModel } = req.body;
 
-    if (!userId || !title || !motionStyle || !imageBase64 || !mimeType || !aspectRatio || !prompt) {
+    if (!userId || !title || !motionStyle || !imageBase64 || !mimeType || !aspectRatio || !prompt || !videoModel) {
       return res.status(400).json({ error: 'Missing required parameters' });
     }
 
@@ -30,9 +30,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const ai = new GoogleGenAI({ apiKey });
 
     console.log('Starting video generation with prompt:', prompt);
+    console.log('Using model:', videoModel);
 
     let operation = await ai.models.generateVideos({
-      model: 'veo-3.1-fast-generate-preview',
+      model: videoModel,
       prompt,
       image: {
         imageBytes: imageBase64,
