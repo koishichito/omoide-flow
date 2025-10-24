@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { sql } from '@vercel/postgres';
+import { sql } from './db';
 import { put } from '@vercel/blob';
 import { GoogleGenAI } from '@google/genai';
 import type { AspectRatio } from '../types';
@@ -108,7 +108,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     console.log('Video uploaded to Blob:', blob.url);
 
-    // Save metadata to Postgres
+    // Ensure table exists and save metadata to Postgres
+    await sql`
+      CREATE TABLE IF NOT EXISTS videos (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        user_id TEXT NOT NULL,
+        title TEXT NOT NULL,
+        year INTEGER,
+        motion_style TEXT NOT NULL,
+        aspect_ratio TEXT NOT NULL,
+        video_url TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT NOW()
+      )
+    `;
+
     const result = await sql`
       INSERT INTO videos (user_id, title, year, motion_style, aspect_ratio, video_url)
       VALUES (${userId}, ${title}, ${year || null}, ${motionStyle}, ${aspectRatio}, ${blob.url})
