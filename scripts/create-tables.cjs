@@ -2,8 +2,13 @@ const { Client } = require('pg');
 require('dotenv').config({ path: '.env.local' });
 
 async function createTables() {
+  // POSTGRES_URL_NON_POOLING を使用（直接接続用）
+  const connectionString = process.env.POSTGRES_URL_NON_POOLING
+    || process.env.POSTGRES_URL
+    || process.env.DATABASE_URL;
+
   const client = new Client({
-    connectionString: process.env.POSTGRES_URL || process.env.DATABASE_URL,
+    connectionString,
     ssl: {
       rejectUnauthorized: false
     }
