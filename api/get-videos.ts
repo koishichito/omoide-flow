@@ -16,6 +16,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(400).json({ error: 'Missing or invalid userId parameter' });
     }
 
+    // Ensure table exists
+    await sql`
+      CREATE TABLE IF NOT EXISTS videos (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        user_id TEXT NOT NULL,
+        title TEXT NOT NULL,
+        year INTEGER,
+        motion_style TEXT NOT NULL,
+        aspect_ratio TEXT NOT NULL,
+        video_url TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT NOW()
+      )
+    `;
+
     // Get videos for the user
     const result = await sql`
       SELECT id, user_id, title, year, motion_style, aspect_ratio, video_url, created_at

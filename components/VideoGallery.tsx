@@ -24,7 +24,8 @@ const VideoGallery: React.FC<VideoGalleryProps> = ({ userId, onBack }) => {
       const response = await fetch(`/api/get-videos?userId=${encodeURIComponent(userId)}`);
 
       if (!response.ok) {
-        throw new Error('動画の取得に失敗しました');
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `動画の取得に失敗しました (${response.status})`);
       }
 
       const data = await response.json();
