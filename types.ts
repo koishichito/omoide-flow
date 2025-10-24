@@ -1,7 +1,12 @@
 export type MotionStyle = 'zoom' | 'pan' | 'depth' | 'ambient' | 'portrait';
 export type AppState = 'API_KEY_CHECK' | 'API_KEY_SELECTION' | 'FORM' | 'GENERATING' | 'RESULT' | 'GALLERY';
 export type AspectRatio = '16:9' | '9:16';
-export type VideoModel = 'veo-3.1-fast-generate-preview' | 'veo-2.0-generate-preview' | 'imagen-3-generate-video-preview';
+export type VideoModel =
+  | 'veo-3.1-generate-preview'
+  | 'veo-3.1-fast-generate-preview'
+  | 'veo-3-generate-preview'
+  | 'veo-3-fast-generate-preview'
+  | 'veo-2.0-generate-preview';
 
 export interface Memory {
   title: string;

@@ -27,9 +27,11 @@ const ASPECT_RATIOS: { id: AspectRatio; label: string; icon: React.ReactNode }[]
 ];
 
 const MODELS: { id: VideoModel; label: string; description: string }[] = [
-  { id: 'veo-3.1-fast-generate-preview', label: 'Veo 3.1 Fast', description: '高速・高品質（推奨）' },
-  { id: 'veo-2.0-generate-preview', label: 'Veo 2.0', description: '安定版' },
-  { id: 'imagen-3-generate-video-preview', label: 'Imagen Video', description: 'シンプル動画' }
+  { id: 'veo-3.1-fast-generate-preview', label: 'Veo 3.1 Fast', description: '最高速・高品質（推奨）' },
+  { id: 'veo-3.1-generate-preview', label: 'Veo 3.1', description: '高品質' },
+  { id: 'veo-3-fast-generate-preview', label: 'Veo 3 Fast', description: '高速' },
+  { id: 'veo-3-generate-preview', label: 'Veo 3', description: 'バランス型' },
+  { id: 'veo-2.0-generate-preview', label: 'Veo 2', description: '安定版' }
 ];
 
 const CreateMemoryForm: React.FC<CreateMemoryFormProps> = ({ onSubmit, error }) => {
