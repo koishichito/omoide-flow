@@ -1,6 +1,8 @@
-import { sql as vercelSql } from '@vercel/postgres';
+import { createPool } from '@vercel/postgres';
 
-// Re-export sql from @vercel/postgres
-// Vercel will automatically use the correct pooled connection string
-// from environment variables (POSTGRES_URL, etc.)
-export const sql = vercelSql;
+// Use NEON_DATABASE_URL for pooled connection
+const pool = createPool({
+  connectionString: process.env.NEON_DATABASE_URL || process.env.POSTGRES_URL
+});
+
+export const sql = pool.sql;
