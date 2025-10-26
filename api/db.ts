@@ -1,17 +1,10 @@
-import { createPool } from '@vercel/postgres';
-
-// Use NEON_DATABASE_URL for pooled connection
-const connectionString = process.env.NEON_DATABASE_URL || process.env.POSTGRES_URL;
-
-if (!connectionString) {
-  throw new Error(
-    'Database connection string not found. Please set NEON_DATABASE_URL or POSTGRES_URL in Vercel environment variables. ' +
-    `Available env vars: ${Object.keys(process.env).filter(k => k.includes('POSTGRES') || k.includes('NEON')).join(', ')}`
-  );
+// Set POSTGRES_URL from NEON_DATABASE_URL if not already set
+// This allows @vercel/postgres to work with NEON_DATABASE_URL
+if (!process.env.POSTGRES_URL && process.env.NEON_DATABASE_URL) {
+  process.env.POSTGRES_URL = process.env.NEON_DATABASE_URL;
 }
 
-const pool = createPool({
-  connectionString
-});
+// Import sql after setting environment variable
+import { sql as vercelSql } from '@vercel/postgres';
 
-export const sql = pool.sql;
+export const sql = vercelSql;
